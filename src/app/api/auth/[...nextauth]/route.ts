@@ -3,7 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import { _db } from "../../db";
 import { RateLimiter } from "limiter";
-import { NextResponse } from "next/server";
 const limiter = new RateLimiter({
   tokensPerInterval: 5,
   interval: "minute",
@@ -47,6 +46,8 @@ export const authOptions: NextAuthOptions = {
             return {
               id: String(user.id),
               email: user.email,
+              nom: user.nom,
+              prenom: user.prenom,
             };
           }
 
@@ -57,6 +58,26 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        //@ts-ignore
+        token.fullName = user.nom.concat(" ", user.prenom);
+      }
+      return token;
+    },
+    session({ token, session }) {
+      console.log(token);
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: Number(token.sub),
+          fullName: token.fullName,
+        },
+      };
+    },
+  },
 };
 const handler = NextAuth(authOptions);
 
