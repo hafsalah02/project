@@ -18,4 +18,73 @@ model Utilisateur {
   email     String @unique
   matricule String @unique
   password  String
+  type    typeUser
+
+}
+enum typeUser {
+  admin
+  chauffeur
+  client
+}
+model demandeTrajet {
+  id Int @id @default(autoincrement())
+  depart String
+  destination String
+  date DateTime
+  heure DateTime
+  client Utilisateur @relation(fields: [clientId], references: [id])
+  clientId Int
+}
+model trajet {
+  id Int @id @default(autoincrement())
+  depart String
+  destination String
+  date DateTime
+  heure DateTime
+  nbrePlace Int
+  nbrePlaceDispo Int
+  chauffeur Utilisateur @relation(fields: [chauffeurId], references: [id],name: "chauffeur")
+  chauffeurId Int
+  client Utilisateur @relation(fields: [clientId], references: [id],name: "client")
+  clientId Int
+  reservation reservation[]
+}
+  
+model reservation {
+  id Int @id @default(autoincrement())
+  trajet trajet @relation(fields: [trajetId], references: [id])
+  trajetId Int
+  client Utilisateur @relation(fields: [clientId], references: [id])
+  clientId Int
+  nbrePlaceReserve Int
+  date DateTime
+  heure DateTime
+  etat etatReservation
+}
+enum etatReservation {
+  enAttente
+  accepte
+  refuse
+}
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Utilisateur {
+  id        Int    @id @default(autoincrement())
+  nom       String
+  prenom    String
+  numero    String @unique
+  email     String @unique
+  matricule String @unique
+  password  String
 }
