@@ -1,8 +1,8 @@
 "use client"
 import { useState, useEffect } from 'react'
 import tw from 'tailwind-styled-components'
-import Map from '../componentsNadjib/Map'
 import { useSearchParams } from 'next/navigation'
+import Map from '../componentsNadjib/Map'
 import RideSelector from '../componentsNadjib/RideSelector'
 import Link from 'next/link'
 
@@ -10,13 +10,14 @@ const Confirm = () => {
     
     const pickupParam = useSearchParams().get('pickupParam')
     const dropoffParam = useSearchParams().get('dropoffParam')
+    const seatsParam = useSearchParams().get('seatsParam')
     const [pickup, setPickup] = useState([0, 0])
     const [dropoff, setDropoff] = useState([0, 0])
 
     const getPickupCoordinates = (pickupParam) => {
         fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${pickupParam}.json?` + 
             new URLSearchParams ({
-                access_token: "pk.eyJ1IjoibmFkamlibmVzc2FoIiwiYSI6ImNscWt6OTdkNTJvdnQyb21rcXJqeGs0MG0ifQ.1cc5lSnVo1lcaQdIE6TM1Q",
+                access_token: "pk.eyJ1IjoibmFkamlibmVzc2FoIiwiYSI6ImNscnhuMHh1cTFhcjcyaW1yYnJvcXRveHMifQ.iprDwx-orVgs3c1ITocVbw",
                 limit: 1
             }
         ))
@@ -27,7 +28,7 @@ const Confirm = () => {
     const getDropoffCoordinates = (dropoffParam) => {
         fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${dropoffParam}.json?` + 
             new URLSearchParams ({
-                access_token: "pk.eyJ1IjoibmFkamlibmVzc2FoIiwiYSI6ImNscWt6OTdkNTJvdnQyb21rcXJqeGs0MG0ifQ.1cc5lSnVo1lcaQdIE6TM1Q",
+                access_token: "pk.eyJ1IjoibmFkamlibmVzc2FoIiwiYSI6ImNscnhuMHh1cTFhcjcyaW1yYnJvcXRveHMifQ.iprDwx-orVgs3c1ITocVbw",
                 limit: 1
             }
         ))
@@ -57,6 +58,7 @@ const Confirm = () => {
                 dropoff={dropoff}
                 pickupParam={pickupParam}
                 dropoffParam={dropoffParam}
+                seatsParam={seatsParam}
             />
         </RideContainer>
     </Wrapper>

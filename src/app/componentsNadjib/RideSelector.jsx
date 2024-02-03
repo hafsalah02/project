@@ -4,11 +4,11 @@ import tw from 'tailwind-styled-components'
 import { types } from '../data/data'
 import Link from 'next/link'
 
-const RideSelector = (props:any) => {
+const RideSelector = (props) => {
 console.log(props)
   const [duration, setDuration] = useState()
   useEffect(() => {
-    fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${props.pickup[0]},${props.pickup[1]};${props.dropoff[0]},${props.dropoff[1]}?access_token=pk.eyJ1IjoibmFkamlibmVzc2FoIiwiYSI6ImNscWt6OTdkNTJvdnQyb21rcXJqeGs0MG0ifQ.1cc5lSnVo1lcaQdIE6TM1Q`)
+    fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${props.pickup[0]},${props.pickup[1]};${props.dropoff[0]},${props.dropoff[1]}?access_token=pk.eyJ1IjoibmFkamlibmVzc2FoIiwiYSI6ImNscnhuMHh1cTFhcjcyaW1yYnJvcXRveHMifQ.iprDwx-orVgs3c1ITocVbw`)
     .then(response => response.json())
     .then(data => setDuration(data.routes[0].duration / 60))
   }, [props.pickup, props.dropoff])
@@ -35,8 +35,8 @@ console.log(props)
                 <CarImage src={type.image}/>
                 <CarDetails>
                   <Service>{type.title}</Service>
-                  <CarSeats>{type.seats} seats</CarSeats>
-                  <TimeLeft>{Math.ceil(duration)} minutes away</TimeLeft>
+                  <CarSeats>{props.seatsParam} places réservées</CarSeats>
+                  <TimeLeft>{Math.ceil(duration)} minutes restantes</TimeLeft>
                 </CarDetails>
                 <Price>
                   {(duration * type.multiplier).toFixed(2)} DZD
@@ -76,7 +76,7 @@ border-2
 border-gray-300
 rounded-md
 m-2
-bg-pink-200
+bg-purple-200
 transform
 hover:scale-105
 transition
@@ -101,5 +101,7 @@ text-xs
 text-purple-500
 `
 const Price = tw.div`
-
+text-xl
+font-bold
+text-purple-500
 `
