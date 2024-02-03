@@ -1,6 +1,9 @@
 import tw from "tailwind-styled-components";
 import Link from "next/link";
 import Map from "./componentsNadjib/Map";
+import tw from "tailwind-styled-components";
+import Link from "next/link";
+import Map from "./componentsNadjib/Map";
 export default function Home() {
   return (
     <Wrapper>
@@ -22,6 +25,7 @@ export default function Home() {
       </ActionItems>
     </Wrapper>
   );
+  );
 }
 
 const Wrapper = tw.div`
@@ -29,17 +33,21 @@ const Wrapper = tw.div`
   flex-col
   h-screen
 `;
+`;
 
 const ActionItems = tw.div`
   flex-1
   p-4
 `;
+`;
 const Header = tw.div`
   flex justify-center items-center
+`;
 `;
 const Profile = tw.div`
   flex
   items-center
+`;
 `;
 const Name = tw.div`
   text-xl
@@ -48,6 +56,7 @@ const Name = tw.div`
   with-20
   text-ml
   align-center
+`;
 `;
 const ActionButton = tw.div`
   flex
@@ -62,11 +71,14 @@ const ActionButton = tw.div`
   ml-20
   mr-20
 `;
+`;
 
 const ActionButtonImage = tw.img`
   w-20
   h-20
 `;
+`;
 const Core = tw.div`
   mt-4
+`;
 `;
