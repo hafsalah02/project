@@ -48,13 +48,15 @@ function ShowRides({ roads, ride }: Props) {
   };
   return (
     <Wrapper>
-      <Title>choose your ride</Title>
+      <Title>choisissez votre trajet</Title>
       <CarList>
         {roads.map((road) => (
           <Car key={road.id}>
             <CarImage src="https://i.ibb.co/cyvcpfF/uberx.png" />
             <CarDetails>
-              <Service>{road.destination}</Service>
+              <Service>de :{road.depart}</Service>
+              <Service>vers :{road.destination}</Service>
+
               <Service>
                 chaufeur : {road.chauffeur.nom + " " + road.chauffeur.prenom}
               </Service>

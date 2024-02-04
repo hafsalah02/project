@@ -1,13 +1,14 @@
 "use client";
 import Link from "next/link";
 import tw from "tailwind-styled-components";
-import Map from "./componentsNadjib/Map";
-import { useSession } from "next-auth/react";
+import { CiLogout } from "react-icons/ci";
+import { signOut, useSession } from "next-auth/react";
+import Map0 from "./components/Map0";
 export default function Home() {
   const session = useSession();
   return (
     <Wrapper>
-      <Map />
+      <Map0 />
       <ActionItems>
         <Header>
           <Profile>
@@ -30,6 +31,14 @@ export default function Home() {
             </ActionButton>
           </Link>
         </Core>
+        <ActionButton
+          className="text-xl"
+          onClick={() => {
+            signOut();
+          }}
+        >
+          <CiLogout />
+        </ActionButton>
       </ActionItems>
     </Wrapper>
   );
@@ -70,11 +79,13 @@ const ActionButton = tw.div`
   rounded-full
   items-center
   justify-center
-  h-20
+  h-12
+  hover:scale-105
+  hover:bg-purple-500
   font-bold
   cursor-pointer
-  ml-20
-  mr-20
+  max-w-2xl
+  mx-auto
   md:text-base
   lg:text-xl
   text-sm
