@@ -23,6 +23,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/confirmRide/page.jsx", "src/app/confirm/page.jsx", "src/app/componentsNadjib/RideSelector.jsx", "src/app/componentsNadjib/Map.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/confirmRide/page.jsx", "src/app/confirm/page.tsx", "src/app/componentsNadjib/RideSelector.jsx", "src/app/componentsNadjib/Map.jsx"],
   "exclude": ["node_modules"]
 }

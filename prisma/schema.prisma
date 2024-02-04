@@ -11,20 +11,41 @@ datasource db {
 }
 
 model Utilisateur {
-  id        Int    @id @default(autoincrement())
-  nom       String
-  prenom    String
-  numero    String @unique
-  email     String @unique
-  matricule String @unique
-  password  String
-  // type      typeUser
+  id          Int           @id @default(autoincrement())
+  nom         String
+  prenom      String
+  numero      String        @unique
+  email       String        @unique
+  matricule   String        @unique
+  password    String
+  reservation reservation[]
+  trajet      trajet[]
+}
 
-  //demandeTrajet demandeTrajet[]
-  //trajet        trajet[]
-  //trajet        trajet[]
-  // reservation   reservation[]
-  //demandeTrajet demandeTrajet[]
-  //trajet        trajet[]
-  //trajet        trajet[]
+model trajet {
+  id             Int    @id @default(autoincrement())
+  depart         String
+  departLng      Float
+  departLat      Float
+  destination    String
+  destinationLng Float
+  destinationLat Float
+  date           String
+  heure          String
+
+  nbrePlace      Int
+  nbrePlaceDispo Int
+  chauffeur      Utilisateur   @relation(fields: [chauffeurId], references: [id])
+  chauffeurId    Int
+  reservation    reservation[]
+}
+
+model reservation {
+  id               Int         @id @default(autoincrement())
+  trajet           trajet      @relation(fields: [trajetId], references: [id])
+  trajetId         Int
+  client           Utilisateur @relation(fields: [clientId], references: [id])
+  clientId         Int
+  nbrePlaceReserve Int
+  date             DateTime
 }

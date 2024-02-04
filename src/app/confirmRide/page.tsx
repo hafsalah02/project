@@ -18,8 +18,8 @@ const page = () => {
           href={{
             pathname: "/confirm",
             query: {
-              pickupParam: pickupParam,
-              dropoffParam: dropoffParam,
+              pickupParam: pickupParam ?? "",
+              dropoffParam: dropoffParam ?? "",
             },
           }}
         >

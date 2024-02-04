@@ -2,7 +2,7 @@
 import React from 'react'
 import tw from 'tailwind-styled-components'
 import { useEffect } from 'react'
-import mapboxgl from 'mapbox-gl'
+import mapboxgl, { Marker } from 'mapbox-gl'
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibmFkamlibmVzc2FoIiwiYSI6ImNscnhuMHh1cTFhcjcyaW1yYnJvcXRveHMifQ.iprDwx-orVgs3c1ITocVbw'
 
@@ -14,25 +14,26 @@ const Map = (props) => {
       center: [3.182612267970402, 36.731771559548974],
       zoom: 9
     }) 
-    if (props.pickup && props.dropoff) {
+    if (!!props.pickup && !!props.dropoff) {
       addToMap(map, props.pickup)
       addToMap(map, props.dropoff)
-      map.fitBounds([props.pickup, props.dropoff], {padding: 100})
     }
 
     map.addControl(
       new mapboxgl.NavigationControl()
     )
     
-    const geolocate = new mapboxgl.GeolocateControl({
+    /*const geolocate = new mapboxgl.GeolocateControl({
       positionOptions: {
         enableHighAccuracy: true
       },
       trackUserLocation: true
-    })
+    })*/
 
-    map.addControl(geolocate)
-
+    //map.addControl(geolocate)
+   map.on('load',()=>{
+    //geolocate.trigger()
+   })
     
   }, [props.pickup, props.dropoff])
 

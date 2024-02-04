@@ -1,20 +1,86 @@
 "use client";
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent, MouseEvent } from "react";
 import tw from "tailwind-styled-components";
 import Link from "next/link";
 import Map from "../componentsNadjib/Map";
 import mapboxgl from "mapbox-gl";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import ShowRides from "./components/ShowRides";
+import axios from "../axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CgSpinner } from "react-icons/cg";
 const Search = () => {
-  const router = useRouter();
-  const [pickup, setPickup] = useState<any[]>([]);
-  const [geolocate, setGeolocate] = useState<mapboxgl.GeolocateControl>();
-  const [dropoff, setDropoff] = useState();
-  const [seats, setSeats] = useState();
+  const [Error, setError] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState(false);
+  const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    fetch(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${ride.dropoff}.json?` +
+        new URLSearchParams({
+          access_token:
+            "pk.eyJ1IjoibmFkamlibmVzc2FoIiwiYSI6ImNscnhuMHh1cTFhcjcyaW1yYnJvcXRveHMifQ.iprDwx-orVgs3c1ITocVbw",
+          limit: 1,
+        })
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.features[0]) {
+          return setError("lieu de destination invalide!");
+        }
+        const [destLng, destLat] = data.features.at(0).center;
+
+        setRide((prevs) => ({
+          ...prevs,
+          dropOff: [Number(destLng), Number(destLat)],
+          dropoff: data.features.at(0).place_name,
+        }));
+        setLoading(false);
+        const toDayDate: Date | string = new Date();
+        const minutes =
+          toDayDate.getMinutes() < 10
+            ? "0".concat(toDayDate.getMinutes().toString())
+            : toDayDate.getMinutes();
+        const hours =
+          toDayDate.getHours() < 10
+            ? "0".concat(toDayDate.getHours().toString())
+            : toDayDate.getHours();
+        const toDayHour = `${hours}:${minutes}`;
+
+        const toDayDateString = toDayDate
+          .toISOString()
+          .split("T")
+          .at(0) as string;
+        if (toDayDateString > ride.Date) {
+          return setError("Date du trajet Invalide!");
+        } //you should check hour also
+        if (toDayDateString === ride.Date && ride.hour <= toDayHour) {
+          return setError("heure de trajet invalide!");
+        }
+        if (ride.NbSeats <= 0 || ride.NbSeats > 4) {
+          return setError(
+            "nombre de places doit etre superieure a 0 et inferieure a 4"
+          );
+        }
+        if (!ride.dropOff) {
+          return;
+        }
+        axios
+          .post("/api/ride", ride)
+          .then((response) => {
+            setRide((prevs) => ({
+              ...prevs,
+              dropOff: undefined,
+              dropoff: "",
+              NbSeats: 0,
+            }));
+            toast(response.data.message, { type: "success" });
+          })
+          .catch((error) => {
+            toast(error.response.data.message, { type: "error" });
+          });
+      });
+  };
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
     const name = e.currentTarget.name;
@@ -23,7 +89,7 @@ const Search = () => {
       [name]: value,
     }));
   };
-  const [Error, setError] = useState<string | undefined>(undefined);
+
   const [ride, setRide] = useState<{
     pickUpPlaceName: string;
     pickUp: number[] | undefined;
@@ -41,7 +107,7 @@ const Search = () => {
     Date: "",
     NbSeats: 0,
   });
-
+  const [geolocate, setGeolocate] = useState<mapboxgl.GeolocateControl>();
   useEffect(() => {
     const date = new Date();
     const minutes =
@@ -66,7 +132,6 @@ const Search = () => {
       center: [3.182612267970402, 36.731771559548974],
       zoom: 20,
     });
-
     const geolocate = new mapboxgl.GeolocateControl({
       positionOptions: {
         enableHighAccuracy: true,
@@ -78,7 +143,6 @@ const Search = () => {
 
     geolocate.on("geolocate", locateUser);
     function locateUser(e) {
-      console.log("fired");
       const lng = e.coords.longitude;
       const lat = e.coords.latitude;
       fetch(
@@ -110,70 +174,6 @@ const Search = () => {
       geolocate.trigger();
     }
   }, [geolocate]);
-  const [Roads, setRoads] = useState<any[]>([]);
-  const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    setError("");
-    //remember to add a loading
-    fetch(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${ride.dropoff}.json?` +
-        new URLSearchParams({
-          access_token:
-            "pk.eyJ1IjoibmFkamlibmVzc2FoIiwiYSI6ImNscnhuMHh1cTFhcjcyaW1yYnJvcXRveHMifQ.iprDwx-orVgs3c1ITocVbw",
-          limit: 1,
-        })
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        if (!data.features[0]) {
-          return setError("lieu de destination invalide!");
-        }
-        const [destLng, destLat] = data.features.at(0).center;
-
-        setRide((prevs) => ({
-          ...prevs,
-          dropOff: [Number(destLng), Number(destLat)],
-          dropoff: data.features.at(0).place_name,
-        }));
-        const toDayDate: Date | string = new Date();
-        const minutes =
-          toDayDate.getMinutes() < 10
-            ? "0".concat(toDayDate.getMinutes().toString())
-            : toDayDate.getMinutes();
-        const hours =
-          toDayDate.getHours() < 10
-            ? "0".concat(toDayDate.getHours().toString())
-            : toDayDate.getHours();
-        const toDayHour = `${hours}:${minutes}`;
-
-        const toDayDateString = toDayDate
-          .toISOString()
-          .split("T")
-          .at(0) as string;
-        if (toDayDateString > ride.Date) {
-          return setError("Date du trajet Invalide!");
-        } //you should check hour also
-        if (toDayDateString === ride.Date && ride.hour <= toDayHour) {
-          return setError("heure de trajet invalide!");
-        }
-        if (ride.NbSeats <= 0 || ride.NbSeats > 4) {
-          return setError(
-            "nombre de places doit etre superieure a 0 et inferieure a 4"
-          );
-        }
-        axios
-          .post("/api/getuserrides", ride)
-          .then((response) => {
-            if (response.data.empty) {
-              return setError(response.data.message);
-            }
-            setRoads(response.data.roads);
-          })
-          .catch((error) => {
-            setError(error.response.data.message);
-          });
-      });
-  };
   const getCurrentLocation = (e) => {
     fetch(
       `https://api.mapbox.com/geocoding/v5/mapbox.places/${e.currentTarget.value}.json?` +
@@ -213,7 +213,7 @@ const Search = () => {
           <span className="text-xl px-6 text-center w-full">
             recuperation de votre position actuelle..
           </span>
-        ) : !!!Roads.length ? (
+        ) : (
           <form
             className="flex
 flex-col
@@ -229,9 +229,9 @@ flex-1
               placeholder="lieu de depart"
               value={ride.pickUpPlaceName}
               required
-              onBlur={getCurrentLocation}
               name="pickUpPlaceName"
               onChange={onChange}
+              onBlur={getCurrentLocation}
             />
             <Input
               placeholder="Quelle est votre destination?"
@@ -267,13 +267,12 @@ flex-1
               className="  bg-purple-500 text-lg p-2 font-bold
             rounded-lg h-10 text-white shadow-sm shadow-black"
             >
-              Rechercher le trajet
+              <>Confirmer le trajet</>
             </button>
           </form>
-        ) : (
-          <ShowRides roads={Roads} ride={ride} />
         )}
       </InputContainer>
+      <ToastContainer />
     </Wrapper>
   );
 };
@@ -302,7 +301,7 @@ const InputContainer = tw.div`
 flex
 bg-white
 p-2
-
+px-4
 `;
 const FromToIcons = tw.div`
 w-10
@@ -328,7 +327,7 @@ flex-col
 flex-1
 `;
 const Input = tw.input`
-
+h-12
 text-lg
 bg-gray-200
 mb-2
@@ -336,6 +335,7 @@ p-2
 outline-none
 border-none
 mr-6
+w-full
 `;
 const ConfirmButton = tw.div`
 bg-purple-400
